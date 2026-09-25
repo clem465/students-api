@@ -3,7 +3,6 @@ from fastapi.testclient import TestClient
 from src.app import app
 from src.data import reset_data
 
-
 client = TestClient(app)
 
 
@@ -179,3 +178,82 @@ def test_create_student_with_invalid_field():
     )
 
     assert response.status_code == 400
+    
+def test_update_student():
+    response = client.put(
+        "/students/1",
+        json={
+            "firstName": "Alice",
+            "lastName": "Martin",
+            "email": "alice.updated@example.com",
+            "grade": 18,
+            "field": "informatique",
+        },
+    )
+
+    assert response.status_code == 200
+
+    student = response.json()
+
+    assert student["id"] == 1
+    assert student["email"] == "alice.updated@example.com"
+    assert student["grade"] == 18
+
+
+def test_update_student_with_unknown_id():
+    response = client.put(
+        "/students/999",
+        json={
+            "firstName": "Alice",
+            "lastName": "Martin",
+            "email": "alice.updated@example.com",
+            "grade": 18,
+            "field": "informatique",
+        },
+    )
+
+    assert response.status_code == 404
+
+
+def test_update_student_with_invalid_id():
+    response = client.put(
+        "/students/abc",
+        json={
+            "firstName": "Alice",
+            "lastName": "Martin",
+            "email": "alice.updated@example.com",
+            "grade": 18,
+            "field": "informatique",
+        },
+    )
+
+    assert response.status_code == 400
+
+
+def test_update_student_with_duplicate_email():
+    response = client.put(
+        "/students/1",
+        json={
+            "firstName": "Alice",
+            "lastName": "Martin",
+            "email": "bob@example.com",
+            "grade": 18,
+            "field": "informatique",
+        },
+    )
+
+    assert response.status_code == 200
+
+    # Vérifie ensuite avec une adresse réellement existante.
+    response = client.put(
+        "/students/1",
+        json={
+            "firstName": "Alice",
+            "lastName": "Martin",
+            "email": "thomas.bernard@example.com",
+            "grade": 18,
+            "field": "informatique",
+        },
+    )
+
+    assert response.status_code == 409

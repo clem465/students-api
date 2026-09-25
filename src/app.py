@@ -3,7 +3,6 @@ from pydantic import BaseModel, EmailStr, Field
 
 from src.data import students
 
-
 app = FastAPI(
     title="Students API",
     description="API REST pour gérer un annuaire d'étudiants",
@@ -18,6 +17,12 @@ class StudentCreate(BaseModel):
     grade: float = Field(ge=0, le=20)
     field: str
 
+class StudentUpdate(BaseModel):
+    firstName: str = Field(min_length=2)
+    lastName: str = Field(min_length=2)
+    email: EmailStr
+    grade: float = Field(ge=0, le=20)
+    field: str
 
 @app.get("/students")
 def get_students():
@@ -136,3 +141,58 @@ def create_student(student: StudentCreate):
     students.append(new_student)
 
     return new_student
+
+@app.put("/students/{student_id}")
+def update_student(student_id: str, student: StudentUpdate):
+    """Update an existing student."""
+    if not student_id.isdigit():
+        raise HTTPException(
+            status_code=400,
+            detail="L'identifiant doit être un nombre.",
+        )
+
+    student_id_int = int(student_id)
+
+    student_to_update = None
+
+    for existing_student in students:
+        if existing_student["id"] == student_id_int:
+            student_to_update = existing_student
+            break
+
+    if student_to_update is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Étudiant introuvable.",
+        )
+
+    allowed_fields = {
+        "informatique",
+        "mathématiques",
+        "physique",
+        "chimie",
+    }
+
+    if student.field not in allowed_fields:
+        raise HTTPException(
+            status_code=400,
+            detail="La filière est invalide.",
+        )
+
+    for existing_student in students:
+        if (
+            existing_student["id"] != student_id_int
+            and existing_student["email"].lower() == student.email.lower()
+        ):
+            raise HTTPException(
+                status_code=409,
+                detail="Cette adresse email est déjà utilisée.",
+            )
+
+    student_to_update["firstName"] = student.firstName
+    student_to_update["lastName"] = student.lastName
+    student_to_update["email"] = str(student.email)
+    student_to_update["grade"] = student.grade
+    student_to_update["field"] = student.field
+
+    return student_to_update
