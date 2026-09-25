@@ -1,0 +1,79 @@
+[1mdiff --git a/src/data.py b/src/data.py[m
+[1mindex e69de29..b877018 100644[m
+[1m--- a/src/data.py[m
+[1m+++ b/src/data.py[m
+[36m@@ -0,0 +1,53 @@[m
+[32m+[m[32mfrom copy import deepcopy[m
+[32m+[m
+[32m+[m[32mINITIAL_STUDENTS = [[m
+[32m+[m[32m    {[m
+[32m+[m[32m        "id": 1,[m
+[32m+[m[32m        "firstName": "Alice",[m
+[32m+[m[32m        "lastName": "Martin",[m
+[32m+[m[32m        "email": "alice.martin@example.com",[m
+[32m+[m[32m        "grade": 16.5,[m
+[32m+[m[32m        "field": "informatique",[m
+[32m+[m[32m    },[m
+[32m+[m[32m    {[m
+[32m+[m[32m        "id": 2,[m
+[32m+[m[32m        "firstName": "Thomas",[m
+[32m+[m[32m        "lastName": "Bernard",[m
+[32m+[m[32m        "email": "thomas.bernard@example.com",[m
+[32m+[m[32m        "grade": 14.0,[m
+[32m+[m[32m        "field": "mathématiques",[m
+[32m+[m[32m    },[m
+[32m+[m[32m    {[m
+[32m+[m[32m        "id": 3,[m
+[32m+[m[32m        "firstName": "Sophie",[m
+[32m+[m[32m        "lastName": "Dubois",[m
+[32m+[m[32m        "email": "sophie.dubois@example.com",[m
+[32m+[m[32m        "grade": 18.5,[m
+[32m+[m[32m        "field": "physique",[m
+[32m+[m[32m    },[m
+[32m+[m[32m    {[m
+[32m+[m[32m        "id": 4,[m
+[32m+[m[32m        "firstName": "Lucas",[m
+[32m+[m[32m        "lastName": "Petit",[m
+[32m+[m[32m        "email": "lucas.petit@example.com",[m
+[32m+[m[32m        "grade": 12.5,[m
+[32m+[m[32m        "field": "chimie",[m
+[32m+[m[32m    },[m
+[32m+[m[32m    {[m
+[32m+[m[32m        "id": 5,[m
+[32m+[m[32m        "firstName": "Emma",[m
+[32m+[m[32m        "lastName": "Robert",[m
+[32m+[m[32m        "email": "emma.robert@example.com",[m
+[32m+[m[32m        "grade": 17.0,[m
+[32m+[m[32m        "field": "informatique",[m
+[32m+[m[32m    },[m
+[32m+[m[32m][m
+[32m+[m
+[32m+[m
+[32m+[m[32mstudents = deepcopy(INITIAL_STUDENTS)[m
+[32m+[m
+[32m+[m
+[32m+[m[32mdef reset_data():[m
+[32m+[m[32m    """Reset the students list to its initial state."""[m
+[32m+[m[32m    students.clear()[m
+[32m+[m[32m    students.extend(deepcopy(INITIAL_STUDENTS))[m
+\ No newline at end of file[m
+[1mdiff --git a/tests/test_students.py b/tests/test_students.py[m
+[1mindex e69de29..03472b5 100644[m
+[1m--- a/tests/test_students.py[m
+[1m+++ b/tests/test_students.py[m
+[36m@@ -0,0 +1,14 @@[m
+[32m+[m[32mfrom src.data import INITIAL_STUDENTS, reset_data, students[m
+[32m+[m
+[32m+[m
+[32m+[m[32mdef test_initial_students():[m
+[32m+[m[32m    assert len(students) == 5[m
+[32m+[m[32m    assert len(INITIAL_STUDENTS) == 5[m
+[32m+[m
+[32m+[m
+[32m+[m[32mdef test_reset_data():[m
+[32m+[m[32m    reset_data()[m
+[32m+[m
+[32m+[m[32m    assert len(students) == 5[m
+[32m+[m[32m    assert students[0]["id"] == 1[m
+[32m+[m[32m    assert students[0]["firstName"] == "Alice"[m
+\ No newline at end of file[m
