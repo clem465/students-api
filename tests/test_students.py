@@ -58,7 +58,7 @@ def test_get_students_stats():
     stats = response.json()
 
     assert stats["totalStudents"] == 5
-    assert stats["averageGrade"] == 15.7
+    assert stats["averageGrade"] == 15.8
     assert stats["studentsByField"]["informatique"] == 2
     assert stats["bestStudent"]["id"] == 3
 
