@@ -257,3 +257,28 @@ def test_update_student_with_duplicate_email():
     )
 
     assert response.status_code == 409
+    
+def test_delete_student():
+    response = client.delete("/students/1")
+
+    assert response.status_code == 200
+
+    result = response.json()
+
+    assert result["student"]["id"] == 1
+
+    response = client.get("/students/1")
+
+    assert response.status_code == 404
+
+
+def test_delete_student_with_unknown_id():
+    response = client.delete("/students/999")
+
+    assert response.status_code == 404
+
+
+def test_delete_student_with_invalid_id():
+    response = client.delete("/students/abc")
+
+    assert response.status_code == 400

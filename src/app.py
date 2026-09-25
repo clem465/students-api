@@ -196,3 +196,28 @@ def update_student(student_id: str, student: StudentUpdate):
     student_to_update["field"] = student.field
 
     return student_to_update
+
+@app.delete("/students/{student_id}")
+def delete_student(student_id: str):
+    """Delete an existing student."""
+    if not student_id.isdigit():
+        raise HTTPException(
+            status_code=400,
+            detail="L'identifiant doit être un nombre.",
+        )
+
+    student_id_int = int(student_id)
+
+    for index, student in enumerate(students):
+        if student["id"] == student_id_int:
+            deleted_student = students.pop(index)
+
+            return {
+                "message": "Étudiant supprimé avec succès.",
+                "student": deleted_student,
+            }
+
+    raise HTTPException(
+        status_code=404,
+        detail="Étudiant introuvable.",
+    )
