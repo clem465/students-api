@@ -1,12 +1,22 @@
 from fastapi import FastAPI, HTTPException, Query
+from pydantic import BaseModel, EmailStr, Field
 
 from src.data import students
+
 
 app = FastAPI(
     title="Students API",
     description="API REST pour gérer un annuaire d'étudiants",
     version="1.0.0",
 )
+
+
+class StudentCreate(BaseModel):
+    firstName: str = Field(min_length=2)
+    lastName: str = Field(min_length=2)
+    email: EmailStr
+    grade: float = Field(ge=0, le=20)
+    field: str
 
 
 @app.get("/students")
@@ -84,3 +94,45 @@ def get_student(student_id: str):
         status_code=404,
         detail="Étudiant introuvable.",
     )
+
+
+@app.post("/students", status_code=201)
+def create_student(student: StudentCreate):
+    """Create a new student."""
+    allowed_fields = {
+        "informatique",
+        "mathématiques",
+        "physique",
+        "chimie",
+    }
+
+    if student.field not in allowed_fields:
+        raise HTTPException(
+            status_code=400,
+            detail="La filière est invalide.",
+        )
+
+    for existing_student in students:
+        if existing_student["email"].lower() == student.email.lower():
+            raise HTTPException(
+                status_code=409,
+                detail="Cette adresse email est déjà utilisée.",
+            )
+
+    if students:
+        new_id = max(existing_student["id"] for existing_student in students) + 1
+    else:
+        new_id = 1
+
+    new_student = {
+        "id": new_id,
+        "firstName": student.firstName,
+        "lastName": student.lastName,
+        "email": str(student.email),
+        "grade": student.grade,
+        "field": student.field,
+    }
+
+    students.append(new_student)
+
+    return new_student

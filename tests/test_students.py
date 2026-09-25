@@ -96,3 +96,86 @@ def test_search_students_with_empty_query():
     response = client.get("/students/search?q=")
 
     assert response.status_code == 400
+
+def test_create_student():
+    response = client.post(
+        "/students",
+        json={
+            "firstName": "Paul",
+            "lastName": "Durand",
+            "email": "paul.durand@example.com",
+            "grade": 15.5,
+            "field": "informatique",
+        },
+    )
+
+    assert response.status_code == 201
+
+    student = response.json()
+
+    assert student["id"] == 6
+    assert student["firstName"] == "Paul"
+    assert student["lastName"] == "Durand"
+    assert student["email"] == "paul.durand@example.com"
+    assert student["grade"] == 15.5
+    assert student["field"] == "informatique"
+
+
+def test_create_student_with_invalid_email():
+    response = client.post(
+        "/students",
+        json={
+            "firstName": "Paul",
+            "lastName": "Durand",
+            "email": "email-invalide",
+            "grade": 15.5,
+            "field": "informatique",
+        },
+    )
+
+    assert response.status_code == 422
+
+
+def test_create_student_with_duplicate_email():
+    response = client.post(
+        "/students",
+        json={
+            "firstName": "Paul",
+            "lastName": "Durand",
+            "email": "alice.martin@example.com",
+            "grade": 15.5,
+            "field": "informatique",
+        },
+    )
+
+    assert response.status_code == 409
+
+
+def test_create_student_with_invalid_grade():
+    response = client.post(
+        "/students",
+        json={
+            "firstName": "Paul",
+            "lastName": "Durand",
+            "email": "paul.durand@example.com",
+            "grade": 21,
+            "field": "informatique",
+        },
+    )
+
+    assert response.status_code == 422
+
+
+def test_create_student_with_invalid_field():
+    response = client.post(
+        "/students",
+        json={
+            "firstName": "Paul",
+            "lastName": "Durand",
+            "email": "paul.durand@example.com",
+            "grade": 15.5,
+            "field": "histoire",
+        },
+    )
+
+    assert response.status_code == 400
